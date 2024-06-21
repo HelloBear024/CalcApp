@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,14 +40,16 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView currentCalculation, previousCalculation;
     private ListView historyTextViewField;
-    private LinearLayout historyTopBar, midleBar;
+    private LinearLayout historyLayoutContainer, midleBar;
 
     private String container = "";
-    private ImageView backBtn, historyBtn, goBackBtn;
+    private ImageView backBtn, historyBtn;
     private long lastTouchTime = 0;
     private long currentTouchTime = 0;
     private boolean isHistoryVisible = false;
     private ConstraintLayout calculationButtons;
+    PreviousCalculation previousCalculationClass = new PreviousCalculation();
+
 
     private LinkedHashMap<String, String> historyMap = new LinkedHashMap<>();
 
@@ -86,8 +89,9 @@ public class MainActivity extends AppCompatActivity {
             historyTextViewField = findViewById(R.id.history_list_view);
             historyBtn = findViewById(R.id.clock_btn);
             calculationButtons = findViewById(R.id.main_btn_container);
-            historyTopBar = findViewById(R.id.hisory_bar);
-            goBackBtn = findViewById(R.id.go_back_btn);
+            historyLayoutContainer = findViewById(R.id.history_list_container);
+
+
             midleBar = findViewById(R.id.middle_bar);
 
             currentCalculation = findViewById(R.id.equal_response);
@@ -95,7 +99,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            numberOneBtn.setOnClickListener(new View.OnClickListener() {
+
+
+
+        numberOneBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     container += "1";
@@ -239,42 +246,27 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
+                    if (isHistoryVisible) {
+                        calculationButtons.setVisibility(View.VISIBLE);
+                        historyBtn.setImageResource(R.drawable.clock);
+                        historyLayoutContainer.setVisibility(View.GONE);
+                    } else {
 
+                        calculationButtons.setVisibility(View.GONE);
+                        historyBtn.setImageResource(R.drawable.smartphone_btn);
+                        historyLayoutContainer.setVisibility(View.VISIBLE);
 
-                            historyTextViewField.setVisibility(View.VISIBLE);
-                            historyTopBar.setVisibility(View.VISIBLE);
-                            previousCalculation.setVisibility(View.GONE);
-                            calculationButtons.setVisibility(View.GONE);
-                            midleBar.setVisibility(View.GONE);
-                            currentCalculation.setVisibility(View.GONE);
+                        CalculationHistoryAdapter adapter = new CalculationHistoryAdapter(MainActivity.this, historyMap);
+                        historyTextViewField.setAdapter(adapter);
+                        Log.d("MainActivity", "Adapter retrived with history data: " + historyMap);
+                        adapter.notifyDataSetChanged();
+                    }
 
-                            List<String> historyList = new ArrayList<>();
-                            for (Map.Entry<String, String> entry : historyMap.entrySet()) {
-                                historyList.add(entry.getKey() + "\n" + " = " + entry.getValue());
-                            }
-
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,
-                                    android.R.layout.simple_list_item_1, historyList);
-                            historyTextViewField.setAdapter(adapter);
-
-
-
+                    isHistoryVisible = !isHistoryVisible;
 
             };
             });
 
-            goBackBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    historyTextViewField.setVisibility(View.GONE);
-                    calculationButtons.setVisibility(View.VISIBLE);
-                    historyTopBar.setVisibility(View.GONE);
-                    midleBar.setVisibility(View.VISIBLE);
-                    currentCalculation.setVisibility(View.VISIBLE);
-                    previousCalculation.setVisibility(View.VISIBLE);
-//                    goBackBtn.setVisibility(View.GONE);
-                }
-            });
 
             equalBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -294,7 +286,6 @@ public class MainActivity extends AppCompatActivity {
                         try {
 
                             Expression expression = new ExpressionBuilder(container).build();
-
                             double result = expression.evaluate();
 
                             if (Math.abs(result - Math.round(result)) < 1e-9) {
@@ -305,7 +296,17 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             if (!currentCalculation.getText().toString().isEmpty() && !previousCalculation.getText().toString().isEmpty()) {
-                                historyMap.put(container, String.format(currentCalculation.getText().toString()));
+
+                                String calculation = container;
+                                String sum = currentCalculation.getText().toString();
+
+                                PreviousCalculation previousCalculation = new PreviousCalculation(calculation, sum);
+                                historyMap = previousCalculation.getHistoryArray();
+
+                                CalculationHistoryAdapter adapter = new CalculationHistoryAdapter(MainActivity.this, historyMap);
+                                historyTextViewField.setAdapter(adapter);
+                                Log.d("MainActivity", "Adapter set with history data:  " + historyMap);
+                                adapter.notifyDataSetChanged();
                             }
 
                         } catch (Exception e) {
@@ -315,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
+
 
 
             parenthesesBtn.setOnClickListener(new View.OnClickListener() {
@@ -375,6 +377,4 @@ public class MainActivity extends AppCompatActivity {
 
             return specialChars.contains(str.charAt(str.length() - 1));
         }
-
-
     }
