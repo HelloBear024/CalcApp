@@ -18,19 +18,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
-        <TextView
-            android:id="@+id/calculation_text_field"
+        <ScrollView
+            android:layout_marginTop="20sp"
+            android:id="@+id/scrollView"
             android:layout_width="360dp"
             android:layout_height="150dp"
-            android:gravity="end|bottom"
-            android:textColor="@color/white"
-            android:textSize="40sp"
-            android:visibility="visible"
+            android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/calculation_text_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|bottom"
+                android:textColor="@color/white"
+                android:textSize="40sp"
+                android:text="" />
+
+        </ScrollView>
 
         <TextView
             android:id="@+id/equal_response"
@@ -40,11 +47,10 @@
             android:gravity="end|bottom"
             android:textColor="@color/white"
             android:textSize="40sp"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/calculation_text_field" />
+            app:layout_constraintTop_toBottomOf="@+id/scrollView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

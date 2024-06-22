@@ -1,16 +1,21 @@
 package com.example.mycalc;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private Button clearBtn, parenthesesBtn, precentsBtn, divisionBtn,
             numberSevenBtn, numberEightBtn, numberNineBtn, multiplicationBtn,
             numberFourBtn, numberFiveBtn, numberSixBtn, minusBtn, numberOneBtn,
-            numberTwoBtn, numberThreeBtn, plusBtn, numberZeroBtn, dotBtn, equalBtn;
+            numberTwoBtn, numberThreeBtn, plusBtn, numberZeroBtn, dotBtn, equalBtn, deleteHistoryBtn;
 
     private TextView currentCalculation, previousCalculation;
     private ListView historyTextViewField;
@@ -65,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
             clearBtn = findViewById(R.id.clear_btn);
             parenthesesBtn = findViewById(R.id.parenthesis_btn);
             precentsBtn = findViewById(R.id.percentage_btn);
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             historyBtn = findViewById(R.id.clock_btn);
             calculationButtons = findViewById(R.id.main_btn_container);
             historyLayoutContainer = findViewById(R.id.history_list_container);
+            deleteHistoryBtn = findViewById(R.id.delete_history);
 
 
             midleBar = findViewById(R.id.middle_bar);
@@ -97,10 +102,32 @@ public class MainActivity extends AppCompatActivity {
             currentCalculation = findViewById(R.id.equal_response);
             previousCalculation = findViewById(R.id.calculation_text_field);
 
+        historyMap = new LinkedHashMap<>();
+        CalculationHistoryAdapter adapter = new CalculationHistoryAdapter(MainActivity.this, historyMap);
+        historyTextViewField.setAdapter(adapter);
 
+        updateHistoryButtonState();
 
+        previousCalculation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Scroll to the end of the text
+                ScrollView scv = findViewById(R.id.scrollView);
+                scv.post(new Runnable() {
+                    public void run() {
+                        scv.fullScroll(HorizontalScrollView.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
 
         numberOneBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -246,26 +273,24 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    if (isHistoryVisible) {
-                        calculationButtons.setVisibility(View.VISIBLE);
-                        historyBtn.setImageResource(R.drawable.clock);
-                        historyLayoutContainer.setVisibility(View.GONE);
+                    if (historyMap.isEmpty()) {
+                        // Optionally show a message or do nothing
+                        Toast.makeText(MainActivity.this, "No history to display", Toast.LENGTH_SHORT).show();
                     } else {
-
-                        calculationButtons.setVisibility(View.GONE);
-                        historyBtn.setImageResource(R.drawable.smartphone_btn);
-                        historyLayoutContainer.setVisibility(View.VISIBLE);
-
-                        CalculationHistoryAdapter adapter = new CalculationHistoryAdapter(MainActivity.this, historyMap);
-                        historyTextViewField.setAdapter(adapter);
-                        Log.d("MainActivity", "Adapter retrived with history data: " + historyMap);
-                        adapter.notifyDataSetChanged();
+                        toggleHistoryVisibility();
                     }
 
-                    isHistoryVisible = !isHistoryVisible;
 
             };
             });
+
+
+        deleteHistoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearHistory();
+            }
+        });
 
 
             equalBtn.setOnClickListener(new View.OnClickListener() {
@@ -295,19 +320,7 @@ public class MainActivity extends AppCompatActivity {
                                 currentCalculation.setText(String.format("%.2f", result));
                             }
 
-                            if (!currentCalculation.getText().toString().isEmpty() && !previousCalculation.getText().toString().isEmpty()) {
-
-                                String calculation = container;
-                                String sum = currentCalculation.getText().toString();
-
-                                PreviousCalculation previousCalculation = new PreviousCalculation(calculation, sum);
-                                historyMap = previousCalculation.getHistoryArray();
-
-                                CalculationHistoryAdapter adapter = new CalculationHistoryAdapter(MainActivity.this, historyMap);
-                                historyTextViewField.setAdapter(adapter);
-                                Log.d("MainActivity", "Adapter set with history data:  " + historyMap);
-                                adapter.notifyDataSetChanged();
-                            }
+                            updateCalculationHistory(container, currentCalculation.getText().toString());
 
                         } catch (Exception e) {
                             Log.e("CalcError", "Failed" + e);
@@ -329,8 +342,20 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+    private void updateHistoryButtonState() {
 
-        public String deleteLastCharacter (String str){
+        if (historyMap.isEmpty()) {
+            historyBtn.setImageResource(R.drawable.clock); // Assuming you have a disabled state icon
+            historyBtn.setClickable(false);
+        } else {
+            historyBtn.setImageResource(R.drawable.clock);
+            historyBtn.setClickable(true);
+
+        }
+    }
+
+
+    public String deleteLastCharacter (String str){
             if (str != null && str.length() > 0 && str.charAt(str.length() - 1) != 'x') {
                 str = str.substring(0, str.length() - 1);
             }
@@ -377,4 +402,44 @@ public class MainActivity extends AppCompatActivity {
 
             return specialChars.contains(str.charAt(str.length() - 1));
         }
+
+    public void updateCalculationHistory(String calculation, String result) {
+        historyMap.put(calculation, result);
+
+        ((CalculationHistoryAdapter)historyTextViewField.getAdapter()).updateData(historyMap);
     }
+
+    private void clearHistory() {
+        Log.d("MainActivity", "Clearing history");
+        historyMap.clear();
+        CalculationHistoryAdapter adapter = (CalculationHistoryAdapter) historyTextViewField.getAdapter();
+        if (adapter != null) {
+            Log.d("MainActivity", "Adapter found, clearing data");
+            adapter.clearData();
+            toggleHistoryVisibility();
+        } else {
+            Log.d("MainActivity", "Adapter not found");
+        }
+    }
+
+    private void toggleHistoryVisibility() {
+        if (isHistoryVisible) {
+
+            calculationButtons.setVisibility(View.VISIBLE);
+            historyBtn.setImageResource(R.drawable.clock);
+            historyLayoutContainer.setVisibility(View.GONE);
+
+        } else {
+            calculationButtons.setVisibility(View.GONE);
+            historyBtn.setImageResource(R.drawable.smartphone_btn);
+            historyLayoutContainer.setVisibility(View.VISIBLE);
+
+            CalculationHistoryAdapter adapter = new CalculationHistoryAdapter(MainActivity.this, historyMap);
+            historyTextViewField.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
+        isHistoryVisible = !isHistoryVisible;
+    }
+
+}

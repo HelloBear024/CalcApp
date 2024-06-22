@@ -35,17 +35,32 @@ public class CalculationHistoryAdapter extends ArrayAdapter<Map.Entry<String, St
             convertView = LayoutInflater.from(context).inflate(R.layout.previous_calculation_cell, parent, false);
         }
 
-        Map.Entry<String, String> entry = historyList.get(position);
+        if (position < historyList.size()) {
+            Map.Entry<String, String> entry = historyList.get(position);
 
-        TextView cellCalculation = convertView.findViewById(R.id.calculation_text_field);
-        TextView cellResult = convertView.findViewById(R.id.calculation_result);
+            TextView cellCalculation = convertView.findViewById(R.id.calculation_text_field);
+            TextView cellResult = convertView.findViewById(R.id.calculation_result);
 
-        cellCalculation.setText(entry.getKey());
-        cellResult.setText(entry.getValue());
+            cellCalculation.setText(entry.getKey());
+            cellResult.setText(entry.getValue());
 
-        Log.d("Adapter", "called");
+            Log.d("Adapter", "called");
 
+        }
         return convertView;
 
     }
+    public void updateData(LinkedHashMap<String, String> newHistoryMap) {
+        Log.d("Adapter", "Updating data");
+        historyList.clear();
+        historyList.addAll(newHistoryMap.entrySet());
+        notifyDataSetChanged();
+    }
+
+    public void clearData() {
+        Log.d("Adapter", "Clearing data");
+        historyList.clear();
+        notifyDataSetChanged();
+    }
+
 }
