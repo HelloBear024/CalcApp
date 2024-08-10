@@ -6,146 +6,252 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".MainActivity">
+    tools:context=".UnitConverter">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/calculation_container"
+    <ImageButton
+        android:id="@+id/go_to_main_calendar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="Unit Converter"
+        android:textSize="30sp"
+        android:textColor="@color/green"
+        app:layout_constraintStart_toEndOf="@id/go_to_main_calendar"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/calculation_container_style"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ScrollView
-            android:layout_marginTop="20sp"
-            android:id="@+id/scrollView"
-            android:layout_width="360dp"
-            android:layout_height="100dp"
-            android:scrollbars="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/calculation_text_field"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end|bottom"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                android:text="" />
-
-        </ScrollView>
-
-        <TextView
-            android:id="@+id/equal_response"
-            android:layout_width="360dp"
-            android:layout_height="90dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="10sp"
-            android:gravity="end|bottom"
-            android:textColor="@color/red"
-            android:textSize="40sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/middle_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:minHeight="40dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calculation_container">
-
-        <ImageView
-            android:id="@+id/clock_btn"
-            android:layout_width="35dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center"
-            android:src="@drawable/clock"
-            />
-
-        <ImageView
-            android:id="@+id/go_to_measurement"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ruler"
-            android:clickable="true"
-            android:focusable="true"
-            />
-
-        <ImageView
-            android:id="@+id/arithmetic_calculator"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="25dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/calculation" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/back_btn"
-            android:layout_width="35dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/backspace" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/history_list_container"
+        android:fillViewport="true"
+        android:scrollbars="none"
         android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:background="@color/green"
-        app:layout_constraintBaseline_toBottomOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/middle_bar">
+        app:layout_constraintTop_toBottomOf="@id/go_to_main_calendar"
 
-        <ListView
-            android:id="@+id/history_list_view"
-            android:layout_width="match_parent"
+
+        >
+
+        <LinearLayout
+            android:layout_width="1000dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:visibility="visible"
-            />
+            android:orientation="horizontal"
 
-        <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/delete_history"
-            android:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:text="Delete History"
-            style="@style/DeleteButtonHistory"
-            android:textColor="@color/red"
-            android:layout_margin="10dp"
-            />
+            >
 
-    </FrameLayout>
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                >
+                <RadioButton
+                    android:id="@+id/radio_button_area"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Area"
+                    android:checked="true"
+                    />
+
+                <RadioButton
+                    android:id="@+id/radio_button_length"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    android:background="@drawable/radio_button_selector"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Length" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    android:background="@drawable/radio_button_selector"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Temperature" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Volume" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_mass"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    android:layout_weight="1"
+                    style="@style/UnitConverterButtons"
+                    android:text="Mass" />
+                <RadioButton
+                    android:id="@+id/radio_button_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Data" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Speed" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Time" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@android:color/transparent"
+                    style="@style/UnitConverterButtons"
+                    android:layout_weight="1"
+                    android:text="Tip" />
+
+            </RadioGroup>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:id="@+id/mock_view1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#B0B0B0"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="8dp" />
+
+    <Spinner
+        android:id="@+id/unit_converter_first_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mock_view1"
+        android:background="@drawable/spinner_up"
+        />
+
+
+    <EditText
+        android:id="@+id/unit_converter_first_input"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        android:background="@android:color/transparent"
+        android:cursorVisible="true"
+        android:focusable="true"
+        android:gravity="end"
+        android:focusableInTouchMode="true"
+        android:textSize="30sp"
+        android:inputType="none"
+        app:layout_constraintEnd_toStartOf="@+id/unit_converter_text_view_first"
+        app:layout_constraintTop_toBottomOf="@id/unit_converter_first_spinner" />
+
+    <TextView
+        android:id="@+id/unit_converter_text_view_first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="12dp"
+        android:text="m2"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unit_converter_first_spinner" />
+
+    <View
+        android:id="@+id/mock_view2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#B0B0B0"
+        app:layout_constraintTop_toBottomOf="@id/unit_converter_first_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="8dp" />
+
+    <Spinner
+        android:id="@+id/unit_converter_second_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mock_view2"
+        android:background="@drawable/spinner_up"
+        />
+
+    <EditText
+        android:id="@+id/unit_converter_second_input"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        android:textSize="30sp"
+        android:gravity="end"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:cursorVisible="true"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toStartOf="@+id/unit_converter_text_view_second"
+        app:layout_constraintTop_toBottomOf="@id/unit_converter_second_spinner" />
+
+
+    <TextView
+        android:id="@+id/unit_converter_text_view_second"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="12dp"
+        android:text="m2"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unit_converter_second_spinner" />
+
+    <View
+        android:id="@+id/mock_view3"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#B0B0B0"
+        app:layout_constraintTop_toBottomOf="@id/unit_converter_second_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="8dp" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_btn_container"
@@ -153,73 +259,14 @@
         android:layout_height="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/middle_bar">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/button_container1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_container2"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/clear_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:textColor="@color/red"
-                android:text="C"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/parenthesis_btn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/parenthesis_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:textColor="@color/neon_green"
-                android:text="( )"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/percentage_btn"
-                app:layout_constraintStart_toEndOf="@+id/clear_btn"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/percentage_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:textColor="@color/neon_green"
-                android:text="%"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/division_btn"
-                app:layout_constraintStart_toEndOf="@+id/parenthesis_btn"
-                app:layout_constraintTop_toTopOf="parent"
-
-                />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/division_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:textColor="@color/neon_green"
-                android:text="/"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/percentage_btn"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@+id/mock_view3">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/button_container2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="1dp"
             app:layout_constraintBottom_toTopOf="@+id/button_container3"
-            app:layout_constraintTop_toBottomOf="@+id/button_container1">
+            app:layout_constraintTop_toTopOf="parent">>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/seven_btn"
@@ -254,13 +301,16 @@
                 app:layout_constraintStart_toEndOf="@+id/eight_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatButton
+
+            <ImageButton
                 android:id="@+id/multiply_btn"
                 style="@style/CalculatorButtonOperator"
                 android:layout_width="0dp"
-                android:textColor="@color/neon_green"
                 android:layout_height="match_parent"
-                android:text="x"
+                android:text=""
+                android:src="@drawable/backspace_unit"
+                android:drawablePadding="8dp"
+                android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/nine_btn"
@@ -307,17 +357,17 @@
                 android:layout_height="match_parent"
                 android:text="6"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/minus_btn"
+                app:layout_constraintEnd_toStartOf="@+id/clear_all_btn"
                 app:layout_constraintStart_toEndOf="@+id/five_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/minus_btn"
+                android:id="@+id/clear_all_btn"
                 style="@style/CalculatorButtonOperator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:textColor="@color/neon_green"
-                android:text="-"
+                android:textColor="@color/red"
+                android:text="C"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/six_btn"
@@ -363,17 +413,17 @@
                 android:layout_height="match_parent"
                 android:text="3"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/plus_btn"
+                app:layout_constraintEnd_toStartOf="@+id/arrow_up"
                 app:layout_constraintStart_toEndOf="@+id/two_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/plus_btn"
+            <ImageButton
+                android:id="@+id/arrow_up"
                 style="@style/CalculatorButtonOperator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:textColor="@color/neon_green"
-                android:text="+"
+                android:src="@drawable/arrow_up"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/three_btn"
@@ -419,17 +469,17 @@
                 android:layout_height="match_parent"
                 android:text="."
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/equal_btn"
+                app:layout_constraintEnd_toStartOf="@+id/arrow_down"
                 app:layout_constraintStart_toEndOf="@+id/zero_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/equal_btn"
+            <ImageButton
+                android:id="@+id/arrow_down"
                 style="@style/CalculatorButtonOperator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:textColor="@color/neon_green"
-                android:text="="
+                android:src="@drawable/button_arrow_down_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/dot_btn"
@@ -438,4 +488,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

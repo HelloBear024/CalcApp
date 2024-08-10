@@ -7,18 +7,6 @@
 
     <style name="Theme.MyCalc" parent="Base.Theme.MyCalc" />
 
-
-
-
-<!--    <style name="CalculatorButton">-->
-<!--        <item name="android:layout_width">wrap_content</item> &lt;!&ndash; Use match_constraint &ndash;&gt;-->
-<!--        <item name="android:layout_height">match_parent</item> &lt;!&ndash; Use match_constraint for dynamic height &ndash;&gt;-->
-<!--        <item name="android:textSize">30sp</item>-->
-<!--        <item name="android:layout_margin">8dp</item>-->
-<!--        <item name="layout_constraintHorizontal_weight">1</item>-->
-<!--    </style>-->
-
-
         <style name="CalculatorButton" parent="@android:style/Widget.Button">
             <item name="android:gravity">center_vertical|center_horizontal</item>
             <item name="android:textColor">#FAF0E6</item>
@@ -27,17 +15,110 @@
             <item name="android:shadowDy">-1</item>
             <item name="android:shadowRadius">0.2</item>
             <item name="android:textStyle">bold</item>
-            <item name="android:background">@drawable/button</item>
+            <item name="android:background">@drawable/button_number</item>
             <item name="android:focusable">true</item>
             <item name="android:clickable">true</item>
-            <item name="android:layout_width">wrap_content</item> <!-- Use match_constraint -->
-            <item name="android:layout_height">match_parent</item> <!-- Use match_constraint for dynamic height -->
+            <item name="android:layout_width">wrap_content</item>
+            <item name="android:layout_height">match_parent</item>
             <item name="android:textSize">30sp</item>
             <item name="android:layout_margin">8dp</item>
             <item name="layout_constraintHorizontal_weight">1</item>
-
         </style>
 
 
+    <style name="CalculatorButtonOperator" parent="@android:style/Widget.Button">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">#FAF0E6</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/button</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="layout_constraintHorizontal_weight">1</item>
+    </style>
+
+    <style name="CalculatorButtonPortrait" parent="@android:style/Widget.Button">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">#FAF0E6</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/button_portrait</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="layout_constraintHorizontal_weight">1</item>
+    </style>
+
+
+
+    <style name="CalculatorButtonPortraitOperator" parent="@android:style/Widget.Button">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">#FAF0E6</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/button_number_portrait</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="layout_constraintHorizontal_weight">1</item>
+    </style>
+
+    <style name="UnitConverterButtons" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">@color/pale_green</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.2</item>
+        <item name="android:background">@drawable/radio_button_selector</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="layout_constraintHorizontal_weight">1</item>
+    </style>
+
+
+    <style name="DeleteButtonHistory" parent="@android:style/Widget.Button">
+        <item name="android:textColor">@color/red</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/delete_button</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_margin">10dp</item>
+
+    </style>
+
+    <dimen name="smaller_button_size_width">35dp</dimen>
+    <dimen name="smaller_button_size_height">50dp</dimen>
+    <dimen name="original_button_size">40dp</dimen>
 
 </resources>

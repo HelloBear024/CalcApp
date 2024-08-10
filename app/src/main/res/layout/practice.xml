@@ -5,155 +5,21 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/black"
     tools:context=".MainActivity">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/calculation_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/calculation_container_style"
+        android:id="@+id/arithmetic_btn_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:visibility="visible"
+
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ScrollView
-            android:layout_marginTop="20sp"
-            android:id="@+id/scrollView"
-            android:layout_width="360dp"
-            android:layout_height="100dp"
-            android:scrollbars="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/calculation_text_field"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end|bottom"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                android:text="" />
-
-        </ScrollView>
-
-        <TextView
-            android:id="@+id/equal_response"
-            android:layout_width="360dp"
-            android:layout_height="90dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="10sp"
-            android:gravity="end|bottom"
-            android:textColor="@color/red"
-            android:textSize="40sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/middle_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:minHeight="40dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calculation_container">
-
-        <ImageView
-            android:id="@+id/clock_btn"
-            android:layout_width="35dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center"
-            android:src="@drawable/clock"
-            />
-
-        <ImageView
-            android:id="@+id/go_to_measurement"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ruler"
-            android:clickable="true"
-            android:focusable="true"
-            />
-
-        <ImageView
-            android:id="@+id/arithmetic_calculator"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="25dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/calculation" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/back_btn"
-            android:layout_width="35dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/backspace" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/history_list_container"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:background="@color/green"
-        app:layout_constraintBaseline_toBottomOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/middle_bar">
-
-        <ListView
-            android:id="@+id/history_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:visibility="visible"
-            />
-
-        <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/delete_history"
-            android:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:text="Delete History"
-            style="@style/DeleteButtonHistory"
-            android:textColor="@color/red"
-            android:layout_margin="10dp"
-            />
-
-    </FrameLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main_btn_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/middle_bar">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -163,35 +29,66 @@
             app:layout_constraintBottom_toTopOf="@+id/button_container2"
             app:layout_constraintTop_toTopOf="parent">
 
+
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/clear_btn"
-                style="@style/CalculatorButtonOperator"
+                android:id="@+id/inverse_buttons"
+                style="@style/CalculatorButtonPortrait"
+                android:layout_width="0dp"
+                android:text="Inv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/rad_and_deg_btn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rad_and_deg_btn"
+                style="@style/CalculatorButtonPortrait"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:textColor="@color/red"
+                android:text="Reg | Deg"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/square_root_btn"
+                app:layout_constraintStart_toEndOf="@+id/inverse_buttons"
+                app:layout_constraintTop_toTopOf="parent"  />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/square_root_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="√"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/clear_btn"
+                app:layout_constraintStart_toEndOf="@+id/rad_and_deg_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/clear_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:text="C"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/parenthesis_btn"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/square_root_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/parenthesis_btn"
-                style="@style/CalculatorButtonOperator"
+                style="@style/CalculatorButtonPortrait"
                 android:layout_width="0dp"
-                android:textColor="@color/neon_green"
                 android:text="( )"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/percentage_btn"
                 app:layout_constraintStart_toEndOf="@+id/clear_btn"
                 app:layout_constraintTop_toTopOf="parent"
+
                 />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/percentage_btn"
-                style="@style/CalculatorButtonOperator"
+                style="@style/CalculatorButtonPortrait"
                 android:layout_width="0dp"
-                android:textColor="@color/neon_green"
                 android:text="%"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/division_btn"
@@ -202,9 +99,8 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/division_btn"
-                style="@style/CalculatorButtonOperator"
+                style="@style/CalculatorButtonPortrait"
                 android:layout_width="0dp"
-                android:textColor="@color/neon_green"
                 android:text="/"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -219,24 +115,51 @@
             android:layout_height="0dp"
             android:layout_marginBottom="1dp"
             app:layout_constraintBottom_toTopOf="@+id/button_container3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_container1">
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/sinus_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="sin"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cos_btn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cos_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="cos"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tangent_function_btn"
+                app:layout_constraintStart_toEndOf="@+id/sinus_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tangent_function_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="tan"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/seven_btn"
+                app:layout_constraintStart_toEndOf="@+id/cos_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/seven_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="7"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/eight_btn"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tangent_function_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/eight_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="8"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/nine_btn"
@@ -245,9 +168,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/nine_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="9"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/multiply_btn"
@@ -256,10 +177,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/multiply_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:textColor="@color/neon_green"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="x"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -272,28 +190,53 @@
             android:id="@+id/button_container3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:textColor="@color/neon_green"
             app:layout_constraintBottom_toTopOf="@+id/button_container4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_container2">
 
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logarithm_function_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="In"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/logarithm_btn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logarithm_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="log"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/reciprocal_function_btn"
+                app:layout_constraintStart_toEndOf="@+id/logarithm_function_btn"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/reciprocal_function_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="1/x"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/four_btn"
+                app:layout_constraintStart_toEndOf="@+id/logarithm_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/four_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="4"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/five_btn"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/five_btn"
+                app:layout_constraintStart_toEndOf="@+id/reciprocal_function_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/five_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="5"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/six_btn"
@@ -302,9 +245,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/six_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="6"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/minus_btn"
@@ -313,10 +254,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/minus_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:textColor="@color/neon_green"
+                style="@style/CalculatorButtonPortrait"
                 android:text="-"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -334,22 +272,47 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_container3">
 
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/exponential_function_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="eˣ"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/square_btn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/square_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="x²"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/exponentiation_btn"
+                app:layout_constraintStart_toEndOf="@+id/exponential_function_btn"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/exponentiation_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="xʸ"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/one_btn"
+                app:layout_constraintStart_toEndOf="@+id/square_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/one_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="1"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/two_btn"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/two_btn"
+                app:layout_constraintStart_toEndOf="@+id/exponentiation_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/two_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/three_btn"
@@ -358,9 +321,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/three_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/plus_btn"
@@ -369,10 +330,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/plus_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:textColor="@color/neon_green"
+                style="@style/CalculatorButtonPortrait"
                 android:text="+"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -391,21 +349,46 @@
             app:layout_constraintTop_toBottomOf="@+id/button_container4">
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/absolute_value_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="|x|"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/pi_btn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/pi_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="π"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/euler_btn"
+                app:layout_constraintStart_toEndOf="@+id/absolute_value_btn"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/euler_btn"
+                style="@style/CalculatorButtonPortrait"
+                android:text="e"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/unknown_btn"
+                app:layout_constraintStart_toEndOf="@+id/pi_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/unknown_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="+/-"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/zero_btn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/euler_btn"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/zero_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/dot_btn"
@@ -414,9 +397,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/dot_btn"
-                style="@style/CalculatorButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                style="@style/CalculatorButtonPortrait"
                 android:text="."
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/equal_btn"
@@ -425,10 +406,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/equal_btn"
-                style="@style/CalculatorButtonOperator"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:textColor="@color/neon_green"
+                style="@style/CalculatorButtonPortrait"
                 android:text="="
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -437,5 +415,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

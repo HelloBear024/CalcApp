@@ -1,47 +1,46 @@
 package com.example.mycalc;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.util.LinkedHashMap;
 
+@Entity(tableName = "PreviousCalculation")
 public class PreviousCalculation {
 
-    private LinkedHashMap<String, String> historyArray = new LinkedHashMap<>();
+    //private LinkedHashMap<String, String> historyArray = new LinkedHashMap<>();
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name="previous_calculation_id")
+    private int id;
 
+    @ColumnInfo(name = "calculation")
     private String calculation;
 
+    @ColumnInfo(name = "sum")
     private String sum;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Ignore
     public PreviousCalculation(){};
 
     public PreviousCalculation(String calculation, String sum) {
+        this.id = 0;
         this.calculation = calculation;
         this.sum = sum;
-        addCalculationToHistory(calculation, sum);
     };
-
-    public LinkedHashMap<String, String> getHistoryArray() {
-        return historyArray;
-    }
-
-    public void setHistoryArray(LinkedHashMap<String, String> historyArray) {
-        this.historyArray = historyArray;
-    }
-
-    public void setCalculation(String calculation) {
-        this.calculation = calculation;
-        addCalculationToHistory(calculation, this.sum);
-    }
 
     public void setSum(String sum) {
         this.sum = sum;
     }
-
-    void addCalculationToHistory(String calculation, String sum) {
-        if (calculation != null && sum != null) {
-            historyArray.put(calculation, sum);
-        }
-    }
-
-
 
     public String getCalculation() {
         return calculation;

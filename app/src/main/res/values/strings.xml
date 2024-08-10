@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">MyCalc</string>
+    <string name="square_root_btn">√</string>
+    <string name="sinus_btn">sin</string>
+    <string name="cos_btn">cos</string>
+    <string name="tangent_function_btn">tan</string>
+    <string name="logarithm_function_btn">In</string>
+    <string name="logarithm_btn">log</string>
+    <string name="reciprocal_function_btn">1/x</string>
+    <string name="exponential_function_btn">eˣ</string>
+    <string name="square_btn">x²</string>
+    <string name="exponentiation_btn">xʸ</string>
+    <string name="absolute_value_btn">|x|</string>
+    <string name="pi_btn">π</string>
+    <string name="euler_btn">e</string>
+
 </resources>

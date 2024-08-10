@@ -4,5 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#183D3D</color>
     <color name="light_green">#5C8374</color>
+    <color name="red">#FFAAAA</color>
+    <color name="neon_green">#A7F432</color>
+    <color name="pale_green">#346B6B</color>
+    <color name="hz_green">#265454</color>
+    <color name="gray">#F1F1F1</color>
+
 
 </resources>
