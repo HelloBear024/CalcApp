@@ -1,4 +1,4 @@
-package com.example.mycalc;
+package com.example.mycalc.CalculatorDatabase;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

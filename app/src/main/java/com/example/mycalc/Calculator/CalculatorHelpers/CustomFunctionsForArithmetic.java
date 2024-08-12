@@ -1,4 +1,4 @@
-package com.example.mycalc;
+package com.example.mycalc.Calculator.CalculatorHelpers;
 import net.objecthunter.exp4j.function.Function;
 import java.util.ArrayList;
 import java.util.List;

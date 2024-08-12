@@ -1,6 +1,5 @@
-package com.example.mycalc;
+package com.example.mycalc.Calculator.CalculatorHelpers;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,12 +11,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.room.Room;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import com.example.mycalc.CalculatorDatabase.PreviousCalculation;
+import com.example.mycalc.CalculatorDatabase.PreviousCalculationDatabase;
+import com.example.mycalc.R;
+
 import java.util.List;
-import java.util.Map;
 
 public class CalculationHistoryAdapter extends ArrayAdapter<PreviousCalculation> {
 

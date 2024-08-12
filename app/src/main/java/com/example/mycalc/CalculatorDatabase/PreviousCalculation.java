@@ -1,11 +1,9 @@
-package com.example.mycalc;
+package com.example.mycalc.CalculatorDatabase;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-
-import java.util.LinkedHashMap;
 
 @Entity(tableName = "PreviousCalculation")
 public class PreviousCalculation {

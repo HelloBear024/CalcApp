@@ -1,4 +1,4 @@
-package com.example.mycalc;
+package com.example.mycalc.UnitConverter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,9 +26,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.mycalc.UnitConverterDir.UnitConverterLogic;
+import com.example.mycalc.Calculator.BasicCalculatorActivity;
+import com.example.mycalc.R;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,10 +38,10 @@ public class UnitConverter extends AppCompatActivity {
 
     Button  button_one, button_two, button_three,
             button_four, button_five, button_six, button_seven, button_eight,
-            button_nine, button_zero, button_dot, delete_previous_character,
+            button_nine, button_zero, button_dot,
             delete_all_characters;
 
-    ImageButton goToMainCalculator,  go_down, go_up;
+    ImageButton goToMainCalculator,  go_down, go_up, delete_previous_character;
     RadioGroup radioGroup;
     Spinner spinner_top, spinner_bottom;
     EditText editText_top, editText_bottom;
@@ -51,17 +49,19 @@ public class UnitConverter extends AppCompatActivity {
     Vibrator vibe;
     String container_top = "", container_bottom = "";
     String conversionType = "area";
+    boolean whatEditTextIsClicked = true;
+    int maxLength = 15;
 
     private List<String> area_data = Arrays.asList("Acres (ac)", "Ares (a)", "Hectares (ha)", "Square centimeters (cm²)", "Square feet (ft²)", "Square inches (in²)", "Square meters (m²)");
     private List<String> length_data = Arrays.asList("Millimetres (mm)", "Centimetres (cm)", "Metres (m)", "Kilometres (km)", "Inches (in)", "Feet (ft)", "Yards (yd)", "Miles (mi)", "Nautical miles (NM)", "Mils (mil)");
     private List<String> temperature_data = Arrays.asList("Celsius (C)", "Fahrenheit (F)", "Kelvin (K)");
-    private List<String> volume_data = Arrays.asList("UK gallons (gal)", " US gallons (gal)", "Litres (l)", "Millilitres (ml)", "Cubic centimetres (cc) (cm²)", "Cubic metres (m³)", "Cubic inches (in³)", "Cubic feet (ft³)");
-    private List<String> mass_data = Arrays.asList("Tons (t)", "UK tons (t)", "US tons (t)", "Pounds (lb)", "Ounces (oz)", "Kilogrammes (kg)", "Grams (g)");
+    private List<String> volume_data = Arrays.asList("UK gallons (uk gal)", " US gallons (us gal)", "Litres (l)", "Millilitres (ml)", "Cubic centimetres (cc) (cm²)", "Cubic metres (m³)", "Cubic inches (in³)", "Cubic feet (ft³)");
+    private List<String> mass_data = Arrays.asList("Tons (t)", "UK tons (uk t)", "US tons (us t)", "Pounds (lb)", "Ounces (oz)", "Kilogrammes (kg)", "Grams (g)");
     private List<String> data_data = Arrays.asList("Bits (bit)", "Bytes (B)", "Kilobytes (KB)", "Kibibytes (KiB)", "Megabytes (MB)", "Mebibytes (MiB)", "Gigabytes (GB)", "Gibibyes (GiB)", "Terabytes (TB)", "Tebibytes (TiB)");
     private List<String> speed_data = Arrays.asList("Metres per second (m/s)", "Metres per hour (m/h)", "Kilometres per second (km/s)", "Kilometres per hour (km/h)", "Inches per second (in/s)", "Inches per hour (in/s)",
                                                     "Feet per second (ft/s)", "Feet per hour (ft/h)", "Miles per second (mi/s)", "Miles per hour (mi/h)", "Knots (kn)");
     private List<String> time_data = Arrays.asList("Milliseconds (ms)", "Seconds (s)", "Minutes (min)", "Hours (h)", "Days (d)", "Weeks (wk)");
-    private List<String> tip_data = Arrays.asList("", "");
+
 
 
 
@@ -90,12 +90,14 @@ public class UnitConverter extends AppCompatActivity {
         spinner_top.setAdapter(adapter);
         spinner_bottom.setAdapter(adapter);
 
+
         spinner_top.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 String extractedText = extractTextFromParentheses(selectedItem);
                 topTextView.setText(extractedText);
+                performConversion(whatEditTextIsClicked);
             }
 
             @Override
@@ -103,6 +105,7 @@ public class UnitConverter extends AppCompatActivity {
 
             }
         });
+
 
 
 
@@ -112,6 +115,7 @@ public class UnitConverter extends AppCompatActivity {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 String extractedText = extractTextFromParentheses(selectedItem);
                 bottomTextView.setText(extractedText);
+                performConversion(whatEditTextIsClicked);
             }
 
             @Override
@@ -119,6 +123,13 @@ public class UnitConverter extends AppCompatActivity {
 
             }
         });
+
+        delete_all_characters.setOnClickListener( v -> {
+
+            clearAllData();
+
+        });
+
 
 
         radioGroup = findViewById(R.id.radio_group);
@@ -129,35 +140,40 @@ public class UnitConverter extends AppCompatActivity {
                 if (checkedId == R.id.radio_button_area) {
                     updateSpinnerData(area_data);
                     conversionType = "area";
+                    clearAllData();
 
                 } else if (checkedId == R.id.radio_button_length) {
                     updateSpinnerData(length_data);
                     conversionType = "length";
+                    clearAllData();
 
                 } else if (checkedId == R.id.radio_button_temperature){
                     updateSpinnerData(temperature_data);
                     conversionType = "temperature";
+                    clearAllData();
 
                 } else if(checkedId == R.id.radio_button_volume){
                     updateSpinnerData(volume_data);
                     conversionType = "volume";
+                    clearAllData();
 
                 } else if(checkedId == R.id.radio_button_mass){
                     updateSpinnerData(mass_data);
                     conversionType = "mass";
+                    clearAllData();
 
                 } else if(checkedId == R.id.radio_button_data){
                     updateSpinnerData(data_data);
                     conversionType = "data";
+                    clearAllData();
                 } else if(checkedId == R.id.radio_button_speed){
                     updateSpinnerData(speed_data);
                     conversionType = "speed";
+                    clearAllData();
                 } else if(checkedId == R.id.radio_button_time){
                     updateSpinnerData(time_data);
                     conversionType = "time";
-                } else if(checkedId == R.id.radio_button_tip){
-                    updateSpinnerData(tip_data);
-                    conversionType = "tip";
+                    clearAllData();
                 }
             }
         });
@@ -165,8 +181,20 @@ public class UnitConverter extends AppCompatActivity {
         goToMainCalculator = findViewById(R.id.go_to_main_calendar);
 
         goToMainCalculator.setOnClickListener(v -> {
-            Intent arithmeticCalculator = new Intent(UnitConverter.this, MainActivity.class);
+            Intent arithmeticCalculator = new Intent(UnitConverter.this, BasicCalculatorActivity.class);
             startActivity(arithmeticCalculator);
+        });
+
+        delete_previous_character.setOnClickListener(v ->  {
+            Log.d("Unit Converte", "previous char has been called");
+                if(editText_top.isFocused()){
+                    deleteCharacterInFrontOfCursor(editText_top);
+                    performConversion(true);
+                }
+                if (editText_bottom.isFocused()){
+                    deleteCharacterInFrontOfCursor(editText_bottom);
+                    performConversion(false);
+                }
         });
 
 
@@ -250,6 +278,9 @@ public class UnitConverter extends AppCompatActivity {
         button_eight = findViewById(R.id.eight_btn);
         button_nine = findViewById(R.id.nine_btn);
         button_zero = findViewById(R.id.zero_btn);
+        delete_previous_character = findViewById(R.id.delete_last_char_btn);
+        delete_all_characters = findViewById(R.id.clear_all_btn);
+        button_dot = findViewById(R.id.dot_btn);
     }
 
     private void setNumberButtonListeners() {
@@ -263,6 +294,7 @@ public class UnitConverter extends AppCompatActivity {
         setButtonListenerWithResizeNumber(button_eight, "8");
         setButtonListenerWithResizeNumber(button_nine, "9");
         setButtonListenerWithResizeNumber(button_zero, "0");
+        setButtonListenerWithResizeNumber(button_dot, ".");
     }
 
     private String extractTextFromParentheses(String text) {
@@ -315,26 +347,6 @@ public class UnitConverter extends AppCompatActivity {
         });
     }
 
-
-    // number is appended to the back but cursor doesn't move
-//    private void appendToContainerNumber(String value) {
-//        if (editText_top.isFocused()) {
-//            // Append the new character at the end of the text
-//            container_top = editText_top.getText().toString() + value;
-//            editText_top.setText(container_top);
-//            // Set the cursor at the end of the text
-//            editText_top.setSelection(container_top.length());
-//        } else if (editText_bottom.isFocused()) {
-//            // Append the new character at the end of the text
-//            container_bottom = editText_bottom.getText().toString() + value;
-//            editText_bottom.setText(container_bottom);
-//            // Set the cursor at the end of the text
-//            editText_bottom.setSelection(container_bottom.length());
-//        }
-//        performConversion();
-//    }
-
-
     private void appendToContainerNumber(String value) {
         if (editText_top.isFocused()) {
             // Get the current text from the EditText
@@ -347,6 +359,8 @@ public class UnitConverter extends AppCompatActivity {
             editText_top.setText(currentText);
             // Move the cursor to the right after insertion
             editText_top.setSelection(start + 1);
+            whatEditTextIsClicked = true;
+            performConversion(whatEditTextIsClicked);
         } else if (editText_bottom.isFocused()) {
             // Get the current text from the EditText
             Editable currentText = editText_bottom.getText();
@@ -358,32 +372,11 @@ public class UnitConverter extends AppCompatActivity {
             editText_bottom.setText(currentText);
             // Move the cursor to the right after insertion
             editText_bottom.setSelection(start + 1);
+            whatEditTextIsClicked = false;
+            performConversion(whatEditTextIsClicked);
         }
-        // Perform the conversion after updating the text
-        performConversion();
+
     }
-
-
-
-//    private void appendToContainerNumber(String value) {
-//        if (editText_top.isFocused()) {
-//            int start = editText_top.getSelectionStart(); // Get current cursor position
-//            container_top = new StringBuilder(container_top).insert(start, value).toString();
-//            editText_top.setText(container_top);
-//            editText_top.setSelection(start + value.length()); // Move cursor to the right after insertion
-//        } else if (editText_bottom.isFocused()) {
-//            int start = editText_bottom.getSelectionStart(); // Get current cursor position
-//            container_bottom = new StringBuilder(container_bottom).insert(start, value).toString();
-//            editText_bottom.setText(container_bottom);
-//            editText_bottom.setSelection(start + value.length()); // Move cursor to the right after insertion
-//        }
-//        performConversion();
-//    }
-
-
-
-
-
 
 
     public void clearAllData() {
@@ -412,47 +405,64 @@ public class UnitConverter extends AppCompatActivity {
         }
     }
 
-    private void performConversion() {
+    private void performConversion(boolean isClicked) {
         String topUnit = topTextView.getText().toString();
         String bottomUnit = bottomTextView.getText().toString();
 
         String inputTextTop = editText_top.getText().toString();
         String inputTextBottom = editText_bottom.getText().toString();
-        long edit_view_container = 0;
-        long value2 = 0;
 
-        if (!inputTextTop.isEmpty() && editText_top.isFocused()) {
-            try {
-                edit_view_container = Long.parseLong(inputTextTop);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Please enter a valid number in the top field", Toast.LENGTH_SHORT).show();
-                return; // Exit the method if the input is invalid
+        double valueToConvert;
+        double convertedValue;
+
+        if (isClicked) {
+            if (!inputTextTop.isEmpty()) {
+                try {
+                    valueToConvert = Double.parseDouble(inputTextTop);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Please enter a valid number in the top field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                UnitConvertingLogic unitConverter = new UnitConvertingLogic();
+                convertedValue = unitConverter.convert(valueToConvert, 0, topUnit, bottomUnit, conversionType)[1];
+                editText_bottom.setText(formatDouble(convertedValue));
             }
-        }
-
-        if (!inputTextBottom.isEmpty() && editText_bottom.isFocused()) {
-            try {
-                value2 = Long.parseLong(inputTextBottom);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Please enter a valid number in the bottom field", Toast.LENGTH_SHORT).show();
-                return; // Exit the method if the input is invalid
-            }
-        }
-
-        UnitConverterLogic unitConverter = new UnitConverterLogic();
-        double[] result = unitConverter.convert(edit_view_container, value2, topUnit, bottomUnit, conversionType);
-
-        // Round the double result to long (integer) before displaying
-        long displayValue1 = Math.round(result[0]);
-        long displayValue2 = Math.round(result[1]);
-
-        // Only update the non-focused EditText to avoid disrupting the cursor
-        if (editText_top.isFocused()) {
-            editText_bottom.setText(String.valueOf(displayValue2));
         } else {
-            editText_top.setText(String.valueOf(displayValue2));
+            if (!inputTextBottom.isEmpty()) {
+                try {
+                    valueToConvert = Double.parseDouble(inputTextBottom);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Please enter a valid number in the bottom field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                UnitConvertingLogic unitConverter = new UnitConvertingLogic();
+                convertedValue = unitConverter.convert(valueToConvert, 0, bottomUnit, topUnit, conversionType)[1];
+                editText_top.setText(formatDouble(convertedValue));
+            }
         }
     }
 
+
+    private void deleteCharacterInFrontOfCursor(EditText editText) {
+        // Get the current text in the EditText
+        Editable text = editText.getText();
+        // Get the current cursor position
+        int cursorPosition = editText.getSelectionStart();
+
+        // Check if there is a character in front of the cursor to delete
+        if (cursorPosition > 0) {
+            // Delete the character in front of the cursor
+            text.delete(cursorPosition - 1, cursorPosition );
+        }
+    }
+
+    private String formatDouble(double value) {
+        // Check if the double value is effectively an integer (e.g., 1234.00)
+        if (value == (long) value) {
+            return String.format("%d", (long) value);  // Return as an integer (no decimals)
+        } else {
+            return String.format("%.6f", value).replaceAll("0*$", "").replaceAll("\\.$", "");  // Return with decimals, removing trailing zeros
+        }
+    }
 
 }

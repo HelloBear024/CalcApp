@@ -1,4 +1,4 @@
-package com.example.mycalc;
+package com.example.mycalc.Calculator;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +31,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.room.Room;
+
+import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHistoryAdapter;
+import com.example.mycalc.Calculator.CalculatorHelpers.CustomFunctionsForArithmetic;
+import com.example.mycalc.Calculator.CalculatorHelpers.HistoryVisibilityHandler;
+import com.example.mycalc.CalculatorDatabase.PreviousCalculation;
+import com.example.mycalc.CalculatorDatabase.PreviousCalculationDatabase;
+import com.example.mycalc.R;
+
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.function.Function;
@@ -40,7 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ArithmeticCalculatorActivity extends AppCompatActivity implements HistoryVisibilityHandler{
+public class ArithmeticCalculatorActivity extends AppCompatActivity implements HistoryVisibilityHandler {
 
         private ImageView backBtn, historyBtn, basicCalculatorBtn;
 
@@ -91,7 +99,7 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             adapter.updateData();
 
             basicCalculatorBtn.setOnClickListener(v -> {
-                Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, MainActivity.class);
+                Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, BasicCalculatorActivity.class);
                 ArithmeticCalculatorActivity.this.startActivity(basicCalculator);
             });
 
@@ -240,7 +248,7 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             });
 
             basicCalculatorBtn.setOnClickListener(v -> {
-                Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, MainActivity.class);
+                Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, BasicCalculatorActivity.class);
                 startActivity(basicCalculator);
                 overridePendingTransition(R.anim.rotate_out, R.anim.rotate_in);
             });

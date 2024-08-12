@@ -1,4 +1,4 @@
-package com.example.mycalc;
+package com.example.mycalc.Calculator;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,13 +34,26 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.room.Room;
 
+import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHelper;
+import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHistoryAdapter;
+import com.example.mycalc.Calculator.CalculatorHelpers.HistoryVisibilityHandler;
+import com.example.mycalc.CalculatorDatabase.PreviousCalculation;
+import com.example.mycalc.CalculatorDatabase.PreviousCalculationDatabase;
+import com.example.mycalc.R;
+import com.example.mycalc.UIDesignLogic.ButtonUtility;
+import com.example.mycalc.UIDesignLogic.VibrationHelper;
+import com.example.mycalc.UnitConverter.UnitConverter;
+
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-public class MainActivity extends AppCompatActivity implements HistoryVisibilityHandler {
+
+
+
+public class BasicCalculatorActivity extends AppCompatActivity implements HistoryVisibilityHandler {
 
     private Button clearBtn, parenthesesBtn, percentsBtn, divisionBtn,
             numberSevenBtn, numberEightBtn, numberNineBtn, multiplicationBtn,
@@ -56,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements HistoryVisibility
     private CalculationHistoryAdapter adapter;
     private PreviousCalculationDatabase previousCalculationDB;
     Vibrator vibe;
+    private VibrationHelper vibrationHelper;
+    private ButtonUtility buttonUtility;
+    private CalculationHelper calculationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements HistoryVisibility
             return insets;
         });
 
+        vibrationHelper = new VibrationHelper(this);
 
         vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         initViews();
@@ -196,13 +213,13 @@ public class MainActivity extends AppCompatActivity implements HistoryVisibility
         });
 
         arithmeticCalculatorBtn.setOnClickListener(v -> {
-            Intent arithmeticCalculator = new Intent(MainActivity.this, ArithmeticCalculatorActivity.class);
+            Intent arithmeticCalculator = new Intent(BasicCalculatorActivity.this, ArithmeticCalculatorActivity.class);
             startActivity(arithmeticCalculator);
             overridePendingTransition(R.anim.rotate_in, R.anim.rotate_out);
         });
 
         goToMeasureActivity.setOnClickListener(v -> {
-            Intent measureUnitActivity = new Intent( MainActivity.this, UnitConverter.class);
+            Intent measureUnitActivity = new Intent( BasicCalculatorActivity.this, UnitConverter.class);
             startActivity(measureUnitActivity);
 
         });

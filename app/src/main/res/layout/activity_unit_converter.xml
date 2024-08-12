@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".UnitConverter">
+    tools:context=".UnitConverter.UnitConverter">
 
 
     <ImageButton
@@ -132,14 +132,7 @@
                     android:layout_weight="1"
                     android:text="Time" />
 
-                <RadioButton
-                    android:id="@+id/radio_button_tip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@android:color/transparent"
-                    style="@style/UnitConverterButtons"
-                    android:layout_weight="1"
-                    android:text="Tip" />
+
 
             </RadioGroup>
         </LinearLayout>
@@ -175,6 +168,7 @@
         android:layout_marginEnd="10dp"
         android:background="@android:color/transparent"
         android:cursorVisible="true"
+        android:textColor="@color/green"
         android:focusable="true"
         android:gravity="end"
         android:focusableInTouchMode="true"
@@ -223,6 +217,7 @@
         android:layout_marginEnd="10dp"
         android:textSize="30sp"
         android:gravity="end"
+        android:textColor="@color/green"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:cursorVisible="true"
@@ -297,13 +292,13 @@
                 android:layout_height="match_parent"
                 android:text="9"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/multiply_btn"
+                app:layout_constraintEnd_toStartOf="@+id/delete_last_char_btn"
                 app:layout_constraintStart_toEndOf="@+id/eight_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
             <ImageButton
-                android:id="@+id/multiply_btn"
+                android:id="@+id/delete_last_char_btn"
                 style="@style/CalculatorButtonOperator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
