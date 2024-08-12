@@ -1,18 +1,10 @@
 package com.example.mycalc.Calculator;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.CycleInterpolator;
@@ -37,21 +29,15 @@ import androidx.room.Room;
 import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHelper;
 import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHistoryAdapter;
 import com.example.mycalc.Calculator.CalculatorHelpers.HistoryVisibilityHandler;
+import com.example.mycalc.CalculatorDatabase.DatabaseManager;
 import com.example.mycalc.CalculatorDatabase.PreviousCalculation;
 import com.example.mycalc.CalculatorDatabase.PreviousCalculationDatabase;
 import com.example.mycalc.R;
 import com.example.mycalc.UIDesignLogic.ButtonUtility;
-import com.example.mycalc.UIDesignLogic.VibrationHelper;
 import com.example.mycalc.UnitConverter.UnitConverter;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-
 
 public class BasicCalculatorActivity extends AppCompatActivity implements HistoryVisibilityHandler {
 
@@ -62,16 +48,15 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
     private TextView currentCalculation, previousCalculation;
     private ListView historyTextViewField;
     private FrameLayout historyLayoutContainer;
-    private String container = "";
     private ImageView backBtn, historyBtn, arithmeticCalculatorBtn, goToMeasureActivity;
     private boolean isHistoryVisible = false;
     private ConstraintLayout calculationButtons;
     private CalculationHistoryAdapter adapter;
     private PreviousCalculationDatabase previousCalculationDB;
-    Vibrator vibe;
-    private VibrationHelper vibrationHelper;
+
     private ButtonUtility buttonUtility;
     private CalculationHelper calculationHelper;
+    private DatabaseManager databaseManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +69,13 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
             return insets;
         });
 
-        vibrationHelper = new VibrationHelper(this);
+        calculationHelper = new CalculationHelper();
+        buttonUtility = new ButtonUtility(this);
+        databaseManager = new DatabaseManager(this);
 
-        vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+
         initViews();
-
 
         previousCalculationDB = Room.databaseBuilder(getApplicationContext(), PreviousCalculationDatabase.class, "PreviousCalculationDB").build();
 
@@ -96,14 +83,13 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
         historyTextViewField.setAdapter(adapter);
 
         adapter.setOnItemClickListener(calculation -> {
-            container = calculation.getCalculation();
+            calculationHelper.setContainer(calculation.getCalculation());
             previousCalculation.setText(calculation.getCalculation());
             currentCalculation.setText(calculation.getSum());
         });
 
 
         adapter.updateData();
-
         updateHistoryDeleteButtonVisibility();
 
         previousCalculation.addTextChangedListener(new TextWatcher() {
@@ -161,272 +147,131 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
     }
 
     private void setNumberButtonListeners() {
-        setButtonListenerWithResizeNumber(numberOneBtn, "1");
-        setButtonListenerWithResizeNumber(numberTwoBtn, "2");
-        setButtonListenerWithResizeNumber(numberThreeBtn, "3");
-        setButtonListenerWithResizeNumber(numberFourBtn, "4");
-        setButtonListenerWithResizeNumber(numberFiveBtn, "5");
-        setButtonListenerWithResizeNumber(numberSixBtn, "6");
-        setButtonListenerWithResizeNumber(numberSevenBtn, "7");
-        setButtonListenerWithResizeNumber(numberEightBtn, "8");
-        setButtonListenerWithResizeNumber(numberNineBtn, "9");
-        setButtonListenerWithResizeNumber(numberZeroBtn, "0");
+
+        buttonUtility.setButtonListenerWithResize(numberOneBtn, "1", () -> {
+            handleNumberClick("1");
+        }, 25f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(numberTwoBtn, "2", () -> {
+            handleNumberClick("2");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(numberThreeBtn, "3", () -> {
+            handleNumberClick("3");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(numberFourBtn, "4", () -> {
+            handleNumberClick("4");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(numberFiveBtn, "5", () -> {
+            handleNumberClick("5");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(numberSixBtn, "6", () -> {
+            handleNumberClick("6");
+        }, 20f, 25f);  // Correct placement of closing parentheses
+
+        buttonUtility.setButtonListenerWithResize(numberSevenBtn, "7", () -> {
+            handleNumberClick("7");
+        }, 20f, 25f);  // Add size parameters
+
+        buttonUtility.setButtonListenerWithResize(numberEightBtn, "8", () -> {
+            handleNumberClick("8");
+        }, 20f, 25f);  // Add size parameters
+
+        buttonUtility.setButtonListenerWithResize(numberNineBtn, "9", () -> {
+            handleNumberClick("9");
+        }, 20f, 25f);  // Add size parameters
+
+        buttonUtility.setButtonListenerWithResize(numberZeroBtn, "0", () -> {
+            handleNumberClick("0");
+        }, 20f, 25f);  // Add size parameters
+    }
+
+
+
+    private void handleNumberClick(String number) {
+        calculationHelper.appendToContainerNumber(number);
+        previousCalculation.setText(calculationHelper.getContainer());
+        checkForResult();
     }
 
 
     private void setOperationButtonListeners() {
         clearBtn.setOnClickListener(v -> {
-            container = "";
-            previousCalculation.setText(container);
+            calculationHelper.clearContainer();
+            previousCalculation.setText(calculationHelper.getContainer());
             currentCalculation.setText("");
-            setColorForBackBtn();
         });
 
-        setButtonListenerWithResize(divisionBtn, "/");
-        setButtonListenerWithResize(plusBtn, "+");
-        setButtonListenerWithResize(minusBtn, "-");
-        setButtonListenerWithResize(percentsBtn, "%");
-        setButtonListenerWithResize(dotBtn, ".");
-        setButtonListenerWithResize(multiplicationBtn, "*");
+
+        buttonUtility.setButtonListenerWithResize(divisionBtn, "/", () -> handleOperationClick("/"), 20f, 25f);
+        buttonUtility.setButtonListenerWithResize(plusBtn, "+", () -> handleOperationClick("+"), 20f, 25f);
+        buttonUtility.setButtonListenerWithResize(minusBtn, "-", () -> handleOperationClick("-"), 20f, 25f);
+        buttonUtility.setButtonListenerWithResize(percentsBtn, "%", () -> handleOperationClick("%"), 20f, 25f);
+        buttonUtility.setButtonListenerWithResize(dotBtn, ".", () -> handleOperationClick("."), 20f, 25f);
+        buttonUtility.setButtonListenerWithResize(multiplicationBtn, "*", () -> handleOperationClick("*"), 20f, 25f);
+
 
         parenthesesBtn.setOnClickListener(v -> {
-            container = checkParentheses(container);
-            previousCalculation.setText(container);
+            String updatedContainer = calculationHelper.checkParentheses(calculationHelper.getContainer());
+            calculationHelper.setContainer(updatedContainer);
+            previousCalculation.setText(updatedContainer);
         });
 
-        unknownOperator.setOnClickListener(v -> togglePlusMinus());
+        unknownOperator.setOnClickListener(v -> {
+            String updatedContainer = calculationHelper.togglePlusMinus(calculationHelper.getContainer());
+            calculationHelper.setContainer(updatedContainer);
+            previousCalculation.setText(updatedContainer);
+        });
 }
 
     private void setOtherButtonListeners() {
 
-        setImageTouchListener(backBtn);
-        setImageTouchListener(historyBtn);
-        setImageTouchListener(arithmeticCalculatorBtn);
-        setImageTouchListener(goToMeasureActivity);
-
-        backBtn.setOnClickListener(v -> {
-            container = deleteLastCharacter(container);
-            previousCalculation.setText(container);
-            checkForResult();
-            setColorForBackBtn();
-
-        });
-
-        arithmeticCalculatorBtn.setOnClickListener(v -> {
+        buttonUtility.setImageTouchListener(backBtn, this::handleBackButtonClick);
+        buttonUtility.setImageTouchListener(historyBtn, this::toggleHistoryVisibility);
+        buttonUtility.setImageTouchListener(arithmeticCalculatorBtn, () -> {
             Intent arithmeticCalculator = new Intent(BasicCalculatorActivity.this, ArithmeticCalculatorActivity.class);
             startActivity(arithmeticCalculator);
             overridePendingTransition(R.anim.rotate_in, R.anim.rotate_out);
         });
 
-        goToMeasureActivity.setOnClickListener(v -> {
-            Intent measureUnitActivity = new Intent( BasicCalculatorActivity.this, UnitConverter.class);
+        buttonUtility.setImageTouchListener(goToMeasureActivity, () -> {
+            Intent measureUnitActivity = new Intent(BasicCalculatorActivity.this, UnitConverter.class);
             startActivity(measureUnitActivity);
-
         });
 
-
-
-        historyBtn.setOnClickListener(v -> toggleHistoryVisibility());
-
-        deleteHistoryBtn.setOnClickListener(v -> {
-                    clearHistory();
-                }
-        );
+        deleteHistoryBtn.setOnClickListener(v -> clearHistory());
 
         equalBtn.setOnClickListener(v -> {
-            if(currentCalculation.getText().toString().isEmpty()){
+            if (currentCalculation.getText().toString().isEmpty()) {
                 showErrorMessage();
                 shakeTextView(previousCalculation);
-            }else{
-            String expressionStr = currentCalculation.getText().toString();
-                PreviousCalculation calc1 = new PreviousCalculation(container, expressionStr);
-                new AddCalculationTask().execute(calc1);
-                clearAllData();
+            } else {
+                String expressionStr = currentCalculation.getText().toString();
+                PreviousCalculation calc1 = new PreviousCalculation(calculationHelper.getContainer(), expressionStr);
+                databaseManager.addCalculation(calc1);
+                calculationHelper.clearAllData(previousCalculation, currentCalculation); // Clear data after setting result
             }
         });
     }
 
 
-
-
-    public void setColorForBackBtn() {
-        if (container.isEmpty()) {
-            ColorMatrix matrix = new ColorMatrix();
-            matrix.setSaturation(0);
-            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-            backBtn.setColorFilter(filter);
-            backBtn.setClickable(false);
-        } else {
-            backBtn.clearColorFilter();
-            backBtn.setClickable(true);
-        }
-    }
-
-    private void appendToContainerOperation(String value) {
-        if (container.isEmpty() && (value.equals("+") || value.equals("-") || value.equals("/") || value.equals("*") || value.equals("%") || value.equals("."))) {
-            return;
-        }
-
-        if (!container.isEmpty()) {
-            char lastChar = container.charAt(container.length() - 1);
-            if (isOperator(lastChar)) {
-                container = container.substring(0, container.length() - 1);
-            }
-        }
-
-        container += value;
-        previousCalculation.setText(container);
-        setColorForBackBtn();
+    private void handleBackButtonClick() {
+        String updatedContainer = calculationHelper.deleteLastCharacter(calculationHelper.getContainer());
+        calculationHelper.setContainer(updatedContainer);
+        previousCalculation.setText(updatedContainer);
         checkForResult();
 
     }
-    private boolean isOperator(char c) {
-        return c == '+' || c == '-' || c == '/' || c == '*' || c == '%' || c == '.';
-    }
 
-
-
-    private void setButtonListenerWithResize(Button button, String number) {
-        button.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        button.setTextSize(25);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        button.setTextSize(30);
-                        break;
-                }
-                return false;
-            }
-        });
-        button.setOnClickListener(v -> {
-            vibrateOnClick();
-            appendToContainerOperation(number);
-        });
-    }
-
-    private void setButtonListenerWithResizeNumber(Button button, String number) {
-        button.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        button.setTextSize(25);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        button.setTextSize(30);
-                        break;
-                }
-                return false;
-            }
-        });
-        button.setOnClickListener(v -> {
-            vibrateOnClick();
-            appendToContainerNumber(number);
-        });
-    }
-
-    private void appendToContainerNumber(String value) {
-        container += value;
-        previousCalculation.setText(container);
-        setColorForBackBtn();
+    private void handleOperationClick(String operation) {
+        calculationHelper.appendToContainerOperation(operation);
+        previousCalculation.setText(calculationHelper.getContainer());
         checkForResult();
     }
 
-
-
-    private void vibrateOnClick() {
-        long[] pattern = {0, 10, 10, 10, 20};
-        int[] amplitudes = {0, 70, 70, 60, 30};
-        int repeatIdx = -1;
-
-        if (vibe != null && vibe.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                vibe.vibrate(VibrationEffect.createWaveform(pattern, amplitudes, repeatIdx));
-
-            } else {
-                vibe.vibrate(50);
-            }
-        } else {
-            Log.e("ArithmeticCalculator", "Vibrator not available or not initialized");
-        }
-    }
-
-
-    private void setImageTouchListener(ImageView imageView) {
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        imageView.setScaleX(0.9f);
-                        imageView.setScaleY(0.9f);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        imageView.setScaleX(1.0f);
-                        imageView.setScaleY(1.0f);
-                        break;
-                }
-                return false;
-            }
-        });
-        imageView.setOnClickListener(v -> {
-            vibrateOnClick();
-        });
-    }
-
-
-    public String deleteLastCharacter(String str) {
-        if (str != null && str.length() > 0 && str.charAt(str.length() - 1) != 'x') {
-            str = str.substring(0, str.length() - 1);
-        }
-        return str;
-    }
-
-    public String checkParentheses(String str) {
-        if (str == null) return null;
-        int openCount = 0;
-        int closeCount = 0;
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == '(') openCount++;
-            if (str.charAt(i) == ')') closeCount++;
-        }
-        if (openCount > closeCount) {
-            if (str.length() > 0 && (Character.isDigit(str.charAt(str.length() - 1)) || str.charAt(str.length() - 1) == ')')) {
-                str += ")";
-            } else {
-                str += "(";
-            }
-        } else {
-            if (str.length() > 0 && (Character.isDigit(str.charAt(str.length() - 1)) || str.charAt(str.length() - 1) == ')')) {
-                str += "*(";
-            } else {
-                str += "(";
-            }
-        }
-        return str;
-    }
-
-    public void clearAllData() {
-        if (currentCalculation.getText().toString().length() > 1) {
-            previousCalculation.setText(currentCalculation.getText().toString());
-            container = currentCalculation.getText().toString();
-            currentCalculation.setText("");
-        }
-    }
-
-    public boolean checkLastChar() {
-        String str = currentCalculation.getText().toString();
-        if (str.isEmpty()) return false;
-        Set<Character> specialChars = new HashSet<>(Arrays.asList('(', '%', '÷', 'X', '-', '+'));
-        return specialChars.contains(str.charAt(str.length() - 1));
-    }
 
     private void clearHistory() {
          adapter.clearData();
@@ -466,25 +311,10 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
         }
     }
 
-    private class AddCalculationTask extends AsyncTask<PreviousCalculation, Void, Void> {
-        @Override
-        protected Void doInBackground(PreviousCalculation... calculations) {
-            previousCalculationDB.getPreviousCalculationDAO().addCalculation(calculations[0]);
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Log.d("AddCalculationTask", "Calculation added, updating adapter data.");
-            adapter.updateData();
-            historyDeleteButtonVisibility();
-        }
-    }
-
-
     private void checkForResult() {
-        if (!checkLastChar()) {
+        if (!calculationHelper.checkLastChar()) {
             try {
-                Expression expression = new ExpressionBuilder(container).build();
+                Expression expression = new ExpressionBuilder(calculationHelper.getContainer()).build();
                 double result = expression.evaluate();
                 if (Math.abs(result - Math.round(result)) < 1e-9) {
                     int finalResult = (int) Math.round(result);
@@ -492,7 +322,7 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
                 } else {
                     currentCalculation.setText(String.format("%.2f", result));
                 }
-                Log.d("MainActivity", "Calculation added to database: " + container + " = " + currentCalculation.getText().toString());
+                Log.d("MainActivity", "Calculation added to database: " + " = " + currentCalculation.getText().toString());
             } catch (Exception e) {
                 Log.e("CalcError", "Failed" + e);
                 currentCalculation.setText("");
@@ -511,48 +341,4 @@ public class BasicCalculatorActivity extends AppCompatActivity implements Histor
         textView.startAnimation(shake);
     }
 
-
-    private void togglePlusMinus() {
-        if (!container.isEmpty()) {
-            int lastOperatorIndex = -1;
-            for (int i = container.length() - 1; i >= 0; i--) {
-                char c = container.charAt(i);
-                if (c == '+' || c == '*' || c == '÷' || c == '%') {
-                    lastOperatorIndex = i;
-                    break;
-                }
-                // Handle special case for '-' as it might be a negative sign
-                if (c == '-' && i > 0 && container.charAt(i - 1) != '(') {
-                    lastOperatorIndex = i;
-                    break;
-                }
-            }
-
-            String number;
-            String beforeNumber;
-            if (lastOperatorIndex == -1) {
-                number = container;
-                beforeNumber = "";
-            } else {
-                // Operator found, work with the number after the operator
-                number = container.substring(lastOperatorIndex + 1);
-                beforeNumber = container.substring(0, lastOperatorIndex + 1);
-            }
-
-            if (!number.isEmpty()) {
-                if (number.startsWith("(-")) {
-                    // Remove the negative sign and parentheses if they exist
-                    number = number.substring(2);
-                } else if (number.startsWith("-")) {
-                    // Handle standalone negative numbers
-                    number = number.substring(1);
-                } else {
-                    // Add a negative sign and parentheses if it does not exist
-                    number = "(-" + number;
-                }
-                container = beforeNumber + number;
-                previousCalculation.setText(container);
-            }
-        }
-    }
 }

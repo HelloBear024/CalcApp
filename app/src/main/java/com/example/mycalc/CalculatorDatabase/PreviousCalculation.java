@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "PreviousCalculation")
 public class PreviousCalculation {
 
-    //private LinkedHashMap<String, String> historyArray = new LinkedHashMap<>();
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name="previous_calculation_id")
     private int id;

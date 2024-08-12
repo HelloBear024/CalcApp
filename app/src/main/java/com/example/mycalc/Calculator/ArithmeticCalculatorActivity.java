@@ -32,12 +32,16 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.room.Room;
 
+import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHelper;
 import com.example.mycalc.Calculator.CalculatorHelpers.CalculationHistoryAdapter;
 import com.example.mycalc.Calculator.CalculatorHelpers.CustomFunctionsForArithmetic;
 import com.example.mycalc.Calculator.CalculatorHelpers.HistoryVisibilityHandler;
+import com.example.mycalc.CalculatorDatabase.DatabaseManager;
 import com.example.mycalc.CalculatorDatabase.PreviousCalculation;
 import com.example.mycalc.CalculatorDatabase.PreviousCalculationDatabase;
 import com.example.mycalc.R;
+import com.example.mycalc.UIDesignLogic.ButtonUtility;
+import com.example.mycalc.UnitConverter.UnitConverter;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -50,7 +54,7 @@ import java.util.Set;
 
 public class ArithmeticCalculatorActivity extends AppCompatActivity implements HistoryVisibilityHandler {
 
-        private ImageView backBtn, historyBtn, basicCalculatorBtn;
+        private ImageView backBtn, historyBtn, basicCalculatorBtn, goToMeasureActivity;
 
         private Button clearBtn, parenthesesBtn, precentsBtn, divisionBtn,
                 numberSevenBtn, numberEightBtn, numberNineBtn, multiplicationBtn,
@@ -71,6 +75,9 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
         private CalculationHistoryAdapter adapter;
         Vibrator vibe;
         boolean isDegClicked = false;
+        private ButtonUtility buttonUtility;
+        private CalculationHelper calculationHelper;
+        private DatabaseManager databaseManager;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +96,10 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
 
             vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+            buttonUtility = new ButtonUtility(this);
+            calculationHelper = new CalculationHelper();
+            databaseManager = new DatabaseManager(this);
+
             initViews();
 
             previousCalculationDB = Room.databaseBuilder(getApplicationContext(), PreviousCalculationDatabase.class, "PreviousCalculationDB").build();
@@ -98,13 +109,8 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             historyTextViewField.setAdapter(adapter);
             adapter.updateData();
 
-            basicCalculatorBtn.setOnClickListener(v -> {
-                Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, BasicCalculatorActivity.class);
-                ArithmeticCalculatorActivity.this.startActivity(basicCalculator);
-            });
-
             adapter.setOnItemClickListener(calculation -> {
-                container = calculation.getCalculation();
+                calculationHelper.setContainer(calculation.getCalculation());
                 previousCalculation.setText(calculation.getCalculation());
                 currentCalculation.setText(calculation.getSum());
             });
@@ -179,6 +185,7 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             regAndDegTextView = findViewById(R.id.reg_and_deg_text_view);
             regDegBtn = findViewById(R.id.rad_and_deg_btn);
             plusMinusBtn = findViewById(R.id.unknown_btn);
+            goToMeasureActivity = findViewById(R.id.go_to_measurement);
 
 
             regDegBtn.setOnClickListener(new View.OnClickListener() {
@@ -187,65 +194,77 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
                     if (!isDegClicked) {
                         regAndDegTextView.setVisibility(View.VISIBLE);
                         isDegClicked = true;
+                        checkForResult();
                     } else {
                         regAndDegTextView.setVisibility(View.INVISIBLE);
                         isDegClicked = false;
+                        checkForResult();
                     }
                 }
             });
         }
 
 
-            private void setNumberButtonListeners() {
-                setButtonListenerWithResizeNumber(numberOneBtn, "1");
-                setButtonListenerWithResizeNumber(numberTwoBtn, "2");
-                setButtonListenerWithResizeNumber(numberThreeBtn, "3");
-                setButtonListenerWithResizeNumber(numberFourBtn, "4");
-                setButtonListenerWithResizeNumber(numberFiveBtn, "5");
-                setButtonListenerWithResizeNumber(numberSixBtn, "6");
-                setButtonListenerWithResizeNumber(numberSevenBtn, "7");
-                setButtonListenerWithResizeNumber(numberEightBtn, "8");
-                setButtonListenerWithResizeNumber(numberNineBtn, "9");
-                setButtonListenerWithResizeNumber(numberZeroBtn, "0");
-            }
+    private void setNumberButtonListeners() {
+
+        buttonUtility.setButtonListenerWithResize(numberOneBtn, "1", () -> handleNumberClick("1"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberTwoBtn, "2", () -> handleNumberClick("2"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberThreeBtn, "3", () -> handleNumberClick("3"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberFourBtn, "4", () -> handleNumberClick("4"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberFiveBtn, "5", () -> handleNumberClick("5"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberSixBtn, "6", () -> handleNumberClick("6"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberSevenBtn, "7", () -> handleNumberClick("7"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberEightBtn, "8", () -> handleNumberClick("8"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberNineBtn, "9", () -> handleNumberClick("9"), 15f, 20f);
+        buttonUtility.setButtonListenerWithResize(numberZeroBtn, "0", () -> handleNumberClick("0"), 15f, 20f);
+
+    }
+
 
 
         private void setOperationButtonListeners() {
             clearBtn.setOnClickListener(v -> {
-                container = "";
-                previousCalculation.setText(container);
+                calculationHelper.clearContainer();
+                previousCalculation.setText(calculationHelper.getContainer());
                 currentCalculation.setText("");
-                setColorForBackBtn();
             });
 
-            setButtonListenerWithResize(divisionBtn, "/");
-            setButtonListenerWithResize(plusBtn, "+");
-            setButtonListenerWithResize(minusBtn, "-");
-            setButtonListenerWithResize(precentsBtn, "%");
-            setButtonListenerWithResize(dotBtn, ".");
-            setButtonListenerWithResize(multiplicationBtn, "*");
+            buttonUtility.setButtonListenerWithResize(divisionBtn, "/", () -> handleOperationClick("/"), 15f, 20f);
+            buttonUtility.setButtonListenerWithResize(plusBtn, "+", () -> handleOperationClick("+"), 15f, 20f);
+            buttonUtility.setButtonListenerWithResize(minusBtn, "-", () -> handleOperationClick("-"), 15f, 20f);
+            buttonUtility.setButtonListenerWithResize(precentsBtn, "%", () -> handleOperationClick("%"), 15f, 20f);
+            buttonUtility.setButtonListenerWithResize(dotBtn, ".", () -> handleOperationClick("."), 15f, 20f);
+            buttonUtility.setButtonListenerWithResize(multiplicationBtn, "*", () -> handleOperationClick("*"), 15f, 20f);
+
 
             parenthesesBtn.setOnClickListener(v -> {
-                checkForResult();
-                container = checkParentheses(container);
-                previousCalculation.setText(container);
+                String updatedContainer = calculationHelper.checkParentheses(calculationHelper.getContainer());
+                calculationHelper.setContainer(updatedContainer);
+                previousCalculation.setText(updatedContainer);
                 checkForResult();
             });
 
-            plusMinusBtn.setOnClickListener(v -> togglePlusMinus());
+            plusMinusBtn.setOnClickListener(v -> {
+                String updatedContainer = calculationHelper.togglePlusMinus(calculationHelper.getContainer());
+                calculationHelper.setContainer(updatedContainer);
+                previousCalculation.setText(updatedContainer);
+            });
         }
 
         private void setOtherButtonListeners() {
-            setImageTouchListener(backBtn);
-            setImageTouchListener(historyBtn);
-            setImageTouchListener(basicCalculatorBtn);
-
-            backBtn.setOnClickListener(v -> {
-
-                container = deleteLastCharacter(container);
-                previousCalculation.setText(container);
-                checkForResult();
+            buttonUtility.setImageTouchListener(backBtn, this::handleBackButtonClick);
+            buttonUtility.setImageTouchListener(historyBtn, this::toggleHistoryVisibility);
+            buttonUtility.setImageTouchListener(basicCalculatorBtn, () -> {
+                Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, BasicCalculatorActivity.class);
+                startActivity(basicCalculator);
+                overridePendingTransition(R.anim.rotate_out, R.anim.rotate_in);
             });
+            buttonUtility.setImageTouchListener(goToMeasureActivity, () -> {
+                Intent measureUnitActivity = new Intent(ArithmeticCalculatorActivity.this, UnitConverter.class);
+                startActivity(measureUnitActivity);
+            });
+
+
 
             basicCalculatorBtn.setOnClickListener(v -> {
                 Intent basicCalculator = new Intent(ArithmeticCalculatorActivity.this, BasicCalculatorActivity.class);
@@ -258,15 +277,14 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             deleteHistoryBtn.setOnClickListener(v -> clearHistory());
 
             equalBtn.setOnClickListener(v -> {
-                if(currentCalculation.getText().toString().isEmpty()){
+                if (currentCalculation.getText().toString().isEmpty()) {
                     showErrorMessage();
                     shakeTextView(previousCalculation);
-                }else{
-                    checkForResult();
+                } else {
                     String expressionStr = currentCalculation.getText().toString();
-                    PreviousCalculation calc1 = new PreviousCalculation(container, expressionStr);
-                    new AddCalculationTask().execute(calc1);
-                    clearAllData();
+                    PreviousCalculation calc1 = new PreviousCalculation(calculationHelper.getContainer(), expressionStr);
+                    databaseManager.addCalculation(calc1);
+                    calculationHelper.clearAllData(previousCalculation, currentCalculation);
                 }
             });
 
@@ -286,25 +304,25 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             eulerBtn.setOnClickListener(v -> appendFunction(eulerBtn.getText().toString().equals("e") ? "e" : "fact("));
         }
 
-    private void appendToContainer(String value) {
-        container += value;
-        previousCalculation.setText(container);
-        setColorForBackBtn();
+    private void handleNumberClick(String number) {
+        calculationHelper.appendToContainerNumber(number);
+        previousCalculation.setText(calculationHelper.getContainer());
         checkForResult();
     }
 
-    public void setColorForBackBtn() {
-        if (container.isEmpty()) {
-            ColorMatrix matrix = new ColorMatrix();
-            matrix.setSaturation(0);
-            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-            backBtn.setColorFilter(filter);
-            backBtn.setClickable(false);
-        } else {
-            backBtn.clearColorFilter();
-            backBtn.setClickable(true);
-        }
+    private void handleOperationClick(String operation) {
+        calculationHelper.appendToContainerOperation(operation);
+        previousCalculation.setText(calculationHelper.getContainer());
+        checkForResult();
     }
+
+    private void handleBackButtonClick() {
+        String updatedContainer = calculationHelper.deleteLastCharacter(calculationHelper.getContainer());
+        calculationHelper.setContainer(updatedContainer);
+        previousCalculation.setText(updatedContainer);
+        checkForResult();
+    }
+
     private void showErrorMessage() {
         Toast.makeText(this, "Calculation is incorrect, please check your input.", Toast.LENGTH_SHORT).show();
     }
@@ -317,11 +335,11 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
     }
 
     private void checkForResult() {
-        if (!checkLastChar()) {
+        if (!calculationHelper.checkLastChar()) {
             try {
-                String expressionToEvaluate = container;
+                String expressionToEvaluate = calculationHelper.getContainer();
                 if (isDegClicked) {
-                    expressionToEvaluate = convertToRadians(container);
+                    expressionToEvaluate = convertToRadians(expressionToEvaluate);
                 }
                 List<Function> customFunctions = CustomFunctionsForArithmetic.getFunctions();
                 Expression expression = new ExpressionBuilder(expressionToEvaluate).functions(customFunctions).build();
@@ -332,86 +350,13 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
                 } else {
                     currentCalculation.setText(String.format("%.8f", result));
                 }
-                Log.d("MainActivity", "Calculation added to database: " + container + " = " + currentCalculation.getText().toString());
+                Log.d("ArithmeticCalculator", "Calculation added to database: " + calculationHelper.getContainer() + " = " + currentCalculation.getText().toString());
             } catch (Exception e) {
                 Log.e("CalcError", "Failed" + e);
                 currentCalculation.setText("");
             }
         }
     }
-
-    private void appendToContainerOperation(String value) {
-        if (container.isEmpty() && (value.equals("+") || value.equals("-") || value.equals("/") || value.equals("*") || value.equals("%") || value.equals("."))) {
-            return;
-        }
-
-        if (!container.isEmpty()) {
-            char lastChar = container.charAt(container.length() - 1);
-            if (isOperator(lastChar)) {
-                container = container.substring(0, container.length() - 1);
-            }
-        }
-
-        container += value;
-        previousCalculation.setText(container);
-        setColorForBackBtn();
-        checkForResult();
-    }
-
-    private boolean isOperator(char c) {
-        return c == '+' || c == '-' || c == '/' || c == '*' || c == '%' || c == '.';
-    }
-
-        public String deleteLastCharacter(String str) {
-            if (str != null && str.length() > 0 && str.charAt(str.length() - 1) != 'x') {
-                str = str.substring(0, str.length() - 1);
-            }
-            return str;
-        }
-
-        public String checkParentheses(String str) {
-            if (str == null) return null;
-            int openCount = 0;
-            int closeCount = 0;
-            for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) == '(') openCount++;
-                if (str.charAt(i) == ')') closeCount++;
-            }
-            if (openCount > closeCount) {
-                if (str.length() > 0 && (Character.isDigit(str.charAt(str.length() - 1)) || str.charAt(str.length() - 1) == ')')) {
-                    str += ")";
-                    checkForResult();
-                } else {
-                    str += "(";
-                    checkForResult();
-                }
-            } else {
-                if (str.length() > 0 && (Character.isDigit(str.charAt(str.length() - 1)) || str.charAt(str.length() - 1) == ')')) {
-                    str += "*(";
-                    checkForResult();
-                } else {
-                    str += "(";
-                    checkForResult();
-                }
-            }
-            checkForResult();
-            return str;
-        }
-
-        public void clearAllData() {
-            if (currentCalculation.getText().toString().length() > 1) {
-                previousCalculation.setText(currentCalculation.getText().toString());
-                container = currentCalculation.getText().toString();
-                currentCalculation.setText("");
-            }
-        }
-
-        public boolean checkLastChar() {
-            String str = currentCalculation.getText().toString();
-            if (str.isEmpty()) return false;
-            Set<Character> specialChars = new HashSet<>(Arrays.asList('(', '%', '÷', 'X', '-', '+'));
-            return specialChars.contains(str.charAt(str.length() - 1));
-        }
 
         private void clearHistory() {
             Log.d("ArithmeticCalculator", "Clearing history");
@@ -432,100 +377,6 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
             isHistoryVisible = !isHistoryVisible;
         }
 
-    private void setButtonListenerWithResizeNumber(Button button, String number) {
-        button.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        button.setTextSize(15);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        button.setTextSize(20);
-                        break;
-                }
-                return false;
-            }
-        });
-        button.setOnClickListener(v -> {
-            vibrateOnClick();
-            appendToContainerNumber(number);
-        });
-    }
-
-    private void appendToContainerNumber(String value) {
-        container += value;
-        previousCalculation.setText(container);
-        setColorForBackBtn();
-        checkForResult();
-    }
-
-
-    private void setButtonListenerWithResize(Button button, String number) {
-        button.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        button.setTextSize(15);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        button.setTextSize(20);
-                        break;
-                }
-                return false;
-            }
-        });
-
-        button.setOnClickListener(v -> {
-            vibrateOnClick();
-            appendToContainerOperation(number);
-        });
-    }
-
-
-    private void setImageTouchListener(ImageView imageView) {
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        imageView.setScaleX(0.9f);
-                        imageView.setScaleY(0.9f);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        imageView.setScaleX(1.0f);
-                        imageView.setScaleY(1.0f);
-                        break;
-                }
-                return false;
-            }
-        });
-        imageView.setOnClickListener(v -> {
-            vibrateOnClick();
-        });
-    }
-
-    private void vibrateOnClick() {
-        long[] pattern = {0, 10, 10, 10, 20};
-        int[] amplitudes = {0, 70, 70, 60, 30};
-        int repeatIdx = -1;
-
-        if (vibe != null && vibe.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                vibe.vibrate(VibrationEffect.createWaveform(pattern, amplitudes, repeatIdx));
-
-            } else {
-                vibe.vibrate(50);
-            }
-        } else {
-            Log.e("ArithmeticCalculator", "Vibrator not available or not initialized");
-        }
-    }
 
         private void switchArithmeticButtonsProperty() {
             if (isInvertedButtonPressed) {
@@ -562,44 +413,10 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
         }
 
     private void appendFunction(String function) {
-        if (!container.isEmpty()) {
-            char lastChar = container.charAt(container.length() - 1);
-            // Special handling for ^3
-            if (function.equals("^(3)")) {
-                if (Character.isDigit(lastChar)) {
-                    container += function;
-                    previousCalculation.setText(container);
-                    setColorForBackBtn();
-                    checkForResult();
-                    return;
-                } else if (isOperator(lastChar)) {
-                    container = container.substring(0, container.length() - 1) + function;
-                    previousCalculation.setText(container);
-                    setColorForBackBtn();
-                    checkForResult();
-                    return;
-                } else {
-                    return;
-                }
-            }
-
-            if (Character.isDigit(lastChar) || lastChar == ')') {
-                container += "*";
-            }
-        } else {
-            if (function.equals("!") || function.equals("^(3)")) {
-                return;
-            }
-        }
-
-        // Append the function and update the display
-        container += function;
-        previousCalculation.setText(container);
-        setColorForBackBtn();
+        calculationHelper.appendFunction(function);
+        previousCalculation.setText(calculationHelper.getContainer());
         checkForResult();
     }
-
-
 
 
     private String convertToRadians(String expression) {
@@ -617,59 +434,6 @@ public class ArithmeticCalculatorActivity extends AppCompatActivity implements H
         }
     }
 
-
-    private class AddCalculationTask extends AsyncTask<PreviousCalculation, Void, Void> {
-            @Override
-            protected Void doInBackground(PreviousCalculation... calculations) {
-                previousCalculationDB.getPreviousCalculationDAO().addCalculation(calculations[0]);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                adapter.updateData();
-            }
-        }
-
-
-    private void togglePlusMinus() {
-        if (!container.isEmpty()) {
-            int lastOperatorIndex = -1;
-            for (int i = container.length() - 1; i >= 0; i--) {
-                char c = container.charAt(i);
-                if (c == '+' || c == '*' || c == '÷' || c == '%') {
-                    lastOperatorIndex = i;
-                    break;
-                }
-                if (c == '-' && i > 0 && container.charAt(i - 1) != '(') {
-                    lastOperatorIndex = i;
-                    break;
-                }
-            }
-
-            String number;
-            String beforeNumber;
-            if (lastOperatorIndex == -1) {
-                number = container;
-                beforeNumber = "";
-            } else {
-                number = container.substring(lastOperatorIndex + 1);
-                beforeNumber = container.substring(0, lastOperatorIndex + 1);
-            }
-
-            if (!number.isEmpty()) {
-                if (number.startsWith("(-")) {
-                    number = number.substring(2);
-                } else if (number.startsWith("-")) {
-                    number = number.substring(1);
-                } else {
-                    number = "(-" + number;
-                }
-                container = beforeNumber + number;
-                previousCalculation.setText(container);
-            }
-        }
-    }
 }
 
 

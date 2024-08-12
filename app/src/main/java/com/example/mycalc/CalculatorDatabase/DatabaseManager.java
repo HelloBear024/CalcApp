@@ -26,6 +26,9 @@ public class DatabaseManager {
             db.getPreviousCalculationDAO().addCalculation(calculations[0]);
             return null;
         }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+        }
     }
 
 }

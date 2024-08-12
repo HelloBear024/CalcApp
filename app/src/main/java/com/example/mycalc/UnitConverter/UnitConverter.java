@@ -28,6 +28,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.mycalc.Calculator.BasicCalculatorActivity;
 import com.example.mycalc.R;
+import com.example.mycalc.UIDesignLogic.ButtonUtility;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +63,7 @@ public class UnitConverter extends AppCompatActivity {
                                                     "Feet per second (ft/s)", "Feet per hour (ft/h)", "Miles per second (mi/s)", "Miles per hour (mi/h)", "Knots (kn)");
     private List<String> time_data = Arrays.asList("Milliseconds (ms)", "Seconds (s)", "Minutes (min)", "Hours (h)", "Days (d)", "Weeks (wk)");
 
-
+    private ButtonUtility buttonUtility;
 
 
     @Override
@@ -76,6 +77,7 @@ public class UnitConverter extends AppCompatActivity {
             return insets;
         });
 
+        buttonUtility = new ButtonUtility(this);
         vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         initViews();
         setNumberButtonListeners();
@@ -105,8 +107,6 @@ public class UnitConverter extends AppCompatActivity {
 
             }
         });
-
-
 
 
         spinner_bottom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -186,7 +186,7 @@ public class UnitConverter extends AppCompatActivity {
         });
 
         delete_previous_character.setOnClickListener(v ->  {
-            Log.d("Unit Converte", "previous char has been called");
+            Log.d("Unit Converter", "previous char has been called");
                 if(editText_top.isFocused()){
                     deleteCharacterInFrontOfCursor(editText_top);
                     performConversion(true);
@@ -204,7 +204,6 @@ public class UnitConverter extends AppCompatActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     editText_top.setCursorVisible(true);
-//                    editText_top.setSelection(editText_top.getText().toString().length());
                     go_down.setEnabled(true);
                     go_up.setEnabled(false);
                 }
@@ -217,7 +216,6 @@ public class UnitConverter extends AppCompatActivity {
                 editText_bottom.clearFocus();
                 editText_top.requestFocus();
                 editText_top.setCursorVisible(true);
-//                editText_top.setSelection(editText_top.getText().length());
                 go_up.setEnabled(false);
                 go_down.setEnabled(true);
             }
@@ -284,17 +282,52 @@ public class UnitConverter extends AppCompatActivity {
     }
 
     private void setNumberButtonListeners() {
-        setButtonListenerWithResizeNumber(button_one, "1");
-        setButtonListenerWithResizeNumber(button_two, "2");
-        setButtonListenerWithResizeNumber(button_three, "3");
-        setButtonListenerWithResizeNumber(button_four, "4");
-        setButtonListenerWithResizeNumber(button_five, "5");
-        setButtonListenerWithResizeNumber(button_six, "6");
-        setButtonListenerWithResizeNumber(button_seven, "7");
-        setButtonListenerWithResizeNumber(button_eight, "8");
-        setButtonListenerWithResizeNumber(button_nine, "9");
-        setButtonListenerWithResizeNumber(button_zero, "0");
-        setButtonListenerWithResizeNumber(button_dot, ".");
+
+
+        buttonUtility.setButtonListenerWithResize(button_one, "1", () -> {
+            appendToContainerNumber("1");
+        }, 25f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_two, "2", () -> {
+            appendToContainerNumber("2");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_three, "3", () -> {
+            appendToContainerNumber("3");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_four, "4", () -> {
+            appendToContainerNumber("4");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_five, "5", () -> {
+            appendToContainerNumber("5");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_six, "6", () -> {
+            appendToContainerNumber("6");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_seven, "7", () -> {
+            appendToContainerNumber("7");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_eight, "8", () -> {
+            appendToContainerNumber("8");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_nine, "9", () -> {
+            appendToContainerNumber("9");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_zero, "0", () -> {
+            appendToContainerNumber("0");
+        }, 20f, 25f);
+
+        buttonUtility.setButtonListenerWithResize(button_dot, ".", () -> {
+            appendToContainerNumber(".");
+        }, 20f, 25f);
+
     }
 
     private String extractTextFromParentheses(String text) {
@@ -308,9 +341,9 @@ public class UnitConverter extends AppCompatActivity {
 
 
 
-
+    //Disable the keyboard
     private void suppressKeyboard(EditText editText) {
-        editText.setShowSoftInputOnFocus(false);  // Disable the soft keyboard
+        editText.setShowSoftInputOnFocus(false);
         editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -318,59 +351,27 @@ public class UnitConverter extends AppCompatActivity {
                     editText.requestFocus();
                     editText.setCursorVisible(true);
                     // Ensure the cursor position can be adjusted by the user
-                    return false; // Returning false allows the touch event to be processed normally
-                }
-                return false; // Returning false allows the touch event to be processed normally
-            }
-        });
-    }
-
-    private void setButtonListenerWithResizeNumber(Button button, String number) {
-        button.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        button.setTextSize(25);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        button.setTextSize(30);
-                        break;
+                    return false;
                 }
                 return false;
             }
-        });
-        button.setOnClickListener(v -> {
-            vibrateOnClick();
-            appendToContainerNumber(number);
         });
     }
 
     private void appendToContainerNumber(String value) {
         if (editText_top.isFocused()) {
-            // Get the current text from the EditText
             Editable currentText = editText_top.getText();
-            // Get the current cursor position
             int start = editText_top.getSelectionStart();
-            // Insert the new character at the cursor position
             currentText.insert(start, value);
-            // Set the text back to the EditText (not strictly necessary since we're modifying the Editable directly)
             editText_top.setText(currentText);
-            // Move the cursor to the right after insertion
             editText_top.setSelection(start + 1);
             whatEditTextIsClicked = true;
             performConversion(whatEditTextIsClicked);
         } else if (editText_bottom.isFocused()) {
-            // Get the current text from the EditText
             Editable currentText = editText_bottom.getText();
-            // Get the current cursor position
             int start = editText_bottom.getSelectionStart();
-            // Insert the new character at the cursor position
             currentText.insert(start, value);
-            // Set the text back to the EditText (not strictly necessary since we're modifying the Editable directly)
             editText_bottom.setText(currentText);
-            // Move the cursor to the right after insertion
             editText_bottom.setSelection(start + 1);
             whatEditTextIsClicked = false;
             performConversion(whatEditTextIsClicked);
@@ -444,24 +445,19 @@ public class UnitConverter extends AppCompatActivity {
 
 
     private void deleteCharacterInFrontOfCursor(EditText editText) {
-        // Get the current text in the EditText
         Editable text = editText.getText();
-        // Get the current cursor position
         int cursorPosition = editText.getSelectionStart();
 
-        // Check if there is a character in front of the cursor to delete
         if (cursorPosition > 0) {
-            // Delete the character in front of the cursor
             text.delete(cursorPosition - 1, cursorPosition );
         }
     }
 
     private String formatDouble(double value) {
-        // Check if the double value is effectively an integer (e.g., 1234.00)
         if (value == (long) value) {
-            return String.format("%d", (long) value);  // Return as an integer (no decimals)
+            return String.format("%d", (long) value);
         } else {
-            return String.format("%.6f", value).replaceAll("0*$", "").replaceAll("\\.$", "");  // Return with decimals, removing trailing zeros
+            return String.format("%.6f", value).replaceAll("0*$", "").replaceAll("\\.$", "");
         }
     }
 

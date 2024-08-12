@@ -92,6 +92,7 @@
             />
 
         <ImageView
+            android:id="@+id/go_to_measurement"
             android:layout_width="40dp"
             android:layout_height="30dp"
             android:layout_marginStart="20dp"
